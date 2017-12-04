@@ -1,0 +1,25 @@
+{
+  "name": "flashcardgenerator",
+  "version": "1.0.0",
+  "description": "A command line application to create flashcards.",
+  "main": "app.js",
+  "scripts": {
+    "test": "na"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jkltroth/FlashcardGenerator.git"
+  },
+  "keywords": [
+    "na"
+  ],
+  "author": "James Roth",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jkltroth/FlashcardGenerator/issues"
+  },
+  "homepage": "https://github.com/jkltroth/FlashcardGenerator#readme",
+  "dependencies": {
+    "inquirer": "^4.0.1"
+  }
+}
