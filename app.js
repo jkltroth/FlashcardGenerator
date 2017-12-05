@@ -12,55 +12,108 @@ const prompts = {
         message: "What type of flashcard do you want to create?",
         choices: ["Basic card", "Cloze card"]
     },
-    // Prompt object to create question
-    addQuestion: {
+    // Prompt object to create front of flashcard
+    addFrontPrompt: {
         type: "input",
-        name: "addQuestion",
-        message: "Who are you???"
+        name: "addFront",
+        message: "Enter text for the front of the flashcard:"
     },
-    // Prompt object to create answer
-    addAnswer: {
+    // Prompt object to create back of flashcard
+    addBackPrompt: {
         type: "input",
-        name: "addAnswer",
-        message: "Who are you???"
+        name: "addBack",
+        message: "Enter text for the back of the flashcard:"
     },
-    // Prompt object to create cloze
-    addCloze: {
+    // Prompt object to create full text of flashcard
+    addFullTextPrompt: {
         type: "input",
-        name: "addCloze",
-        message: "Who are you???"
+        name: "addFullText",
+        message: "Enter the full text for the flashcard:"
+    },
+    // Prompt object to create cloze deletion of flashcard
+    addClozeDeletionPrompt: {
+        type: "input",
+        name: "addClozeDeletion",
+        message: "What part of the full text is the cloze deletion?"
     },
     // Prompt object to make another card
-    createNewCardPrompt: {
+    createMoreCardsPrompt: {
         type: "confirm",
-        name: "createNewCard",
+        name: "createMoreCards",
         message: "Would you like to create another flashcard?"
     }
 };
 
-// Function to make flash cards
-const makeFlashCards = function () {
-
-    inquirer.prompt(prompts.flashCardTypePrompt)
+//function to create newBasicCard
+const createNewBasicCard = function () {
+    console.log('------------------');
+    inquirer.prompt([prompts.addFrontPrompt, prompts.addBackPrompt])
         .then(function (answers) {
 
-            if (answers.flashCardType === "Basic card") {
-                console.log("You chose basic bitch...")
-            } else if (answers.flashCardType === "Cloze card") {
-                console.log("You chose cloze fa hoez...")
-            }
+            let newBasicCard = new BasicCard(
+                answers.addFront,
+                answers.addBack
+            );
+
+            flashCardArray.push(newBasicCard);
+
+            moreCards();
 
         });
 };
 
-//function to create newBasicCard
-const createNewBasicCard = function () {
+// Function to create newClozeCard
+const createNewClozeCard = function () {
+    console.log('------------------');
+    inquirer.prompt([prompts.addFullTextPrompt, prompts.addClozeDeletionPrompt])
+        .then(function (answers) {
 
+            let newClozeCard = new ClozeCard(
+                answers.addFullText,
+                answers.addClozeDeletion
+            );
+
+            flashCardArray.push(newClozeCard);
+
+            moreCards();
+        });
 };
 
-//function to create newClozeCard
-const createNewClozeCard = function () {
+// Function to make more cards
+const moreCards = function () {
+    console.log('------------------');
+    inquirer.prompt(prompts.createMoreCardsPrompt)
+        .then(function (answers) {
 
+            if (answers.createMoreCards) {
+                makeFlashCards();
+            } else if (!answers.createMoreCards) {
+                //print flash cards
+                console.log(flashCardArray);
+            }
+
+        });
+}
+
+// Function to print flash cards
+const printCards = function () {
+    flashCardArray.forEach(function(element){
+        console.log('Front: ' + '\nBack: ');
+    });
+}
+
+// Function to make flash cards
+const makeFlashCards = function () {
+    console.log('------------------');
+    inquirer.prompt(prompts.flashCardTypePrompt)
+        .then(function (answers) {
+
+            if (answers.flashCardType === "Basic card") {
+                createNewBasicCard();
+            } else if (answers.flashCardType === "Cloze card") {
+                createNewClozeCard();
+            }
+        });
 };
 
 makeFlashCards();
