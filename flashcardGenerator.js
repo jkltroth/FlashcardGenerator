@@ -2,8 +2,7 @@ const inquirer = require('inquirer');
 const ClozeCard = require('./clozeCard.js');
 const BasicCard = require('./basicCard.js');
 
-let basicFlashcardArray = [];
-let clozeFlashcardArray = [];
+let flashcardArray = [];
 
 const prompts = {
 
@@ -89,10 +88,9 @@ const createNewBasicCard = function () {
                 answers.addBack
             );
 
-            basicFlashcardArray.push(newBasicCard);
-
+            flashcardArray.push('Front: ' + newBasicCard.front + '\nBack: ' + newBasicCard.back);
+            
             moreCards();
-
         });
 };
 
@@ -108,11 +106,11 @@ const createNewClozeCard = function () {
             );
 
             if (newClozeCard.partial) {
-                clozeFlashcardArray.push(newClozeCard);
+                flashcardArray.push('Front: ' + newClozeCard.partial + '\nBack: ' + newClozeCard.fullText);
                 moreCards();
             } else if (!newClozeCard.partial) {
                 console.log('------------------');
-                console.log('"' + newClozeCard.cloze + '" does not exist in the string "' + newClozeCard.fullText + '"');
+                console.log('Error: "' + newClozeCard.cloze + '" does not exist in the string "' + newClozeCard.fullText + '"');
                 console.log('Please try again');
                 createNewClozeCard();
             }
@@ -134,17 +132,12 @@ const moreCards = function () {
 
 // Function to print flash cards
 const printCards = function () {
-    let count = 0;
-    basicFlashcardArray.forEach(function (element) {
-        count++;
+
+    for (var i = 0; i < flashcardArray.length; i++) {
         console.log('------------------');
-        console.log('Flashcard #' + count + '\nFront: ' + element.front + '\nBack: ' + element.back);
-    });
-    clozeFlashcardArray.forEach(function (element) {
-        count++;
-        console.log('------------------');
-        console.log('Flashcard #' + count + '\nFront: ' + element.partial + '\nBack: ' + element.fullText);
-    });
+        console.log('Flashcard #' + (i + 1));
+        console.log(flashcardArray[i]);
+    }
 };
 
 runProgram();
