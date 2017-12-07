@@ -2,13 +2,20 @@ const inquirer = require('inquirer');
 const ClozeCard = require('./clozeCard.js');
 const BasicCard = require('./basicCard.js');
 
-let flashCardArray = [];
+let basicFlashcardArray = [];
+let clozeFlashcardArray = [];
 
 const prompts = {
+
+    letsStartPrompt: {
+        type: "confirm",
+        name: "letsStart",
+        message: "Do you want to make some flashcards?"
+    },
     // Prompt object for flashcard type
-    flashCardTypePrompt: {
+    flashcardTypePrompt: {
         type: "list",
-        name: "flashCardType",
+        name: "flashcardType",
         message: "What type of flashcard do you want to create?",
         choices: ["Basic card", "Cloze card"]
     },
@@ -40,8 +47,35 @@ const prompts = {
     createMoreCardsPrompt: {
         type: "confirm",
         name: "createMoreCards",
-        message: "Would you like to create another flashcard?"
+        message: "Would you like to create more flashcards?"
     }
+};
+
+const runProgram = function () {
+    console.log('------------------');
+    inquirer.prompt(prompts.letsStartPrompt)
+        .then(function (answers) {
+            if (answers.letsStart) {
+                makeFlashcards();
+            } else if (!answers.letsStart) {
+                console.log('------------------');
+                console.log('Maybe next time!');
+            }
+        });
+}
+
+// Function to make flash cards
+const makeFlashcards = function () {
+    console.log('------------------');
+    inquirer.prompt(prompts.flashcardTypePrompt)
+        .then(function (answers) {
+
+            if (answers.flashcardType === "Basic card") {
+                createNewBasicCard();
+            } else if (answers.flashcardType === "Cloze card") {
+                createNewClozeCard();
+            }
+        });
 };
 
 //function to create newBasicCard
@@ -55,7 +89,7 @@ const createNewBasicCard = function () {
                 answers.addBack
             );
 
-            flashCardArray.push(newBasicCard);
+            basicFlashcardArray.push(newBasicCard);
 
             moreCards();
 
@@ -73,9 +107,15 @@ const createNewClozeCard = function () {
                 answers.addClozeDeletion
             );
 
-            flashCardArray.push(newClozeCard);
-
-            moreCards();
+            if (newClozeCard.partial) {
+                clozeFlashcardArray.push(newClozeCard);
+                moreCards();
+            } else if (!newClozeCard.partial) {
+                console.log('------------------');
+                console.log('"' + newClozeCard.cloze + '" does not exist in the string "' + newClozeCard.fullText + '"');
+                console.log('Please try again');
+                createNewClozeCard();
+            }
         });
 };
 
@@ -84,59 +124,27 @@ const moreCards = function () {
     console.log('------------------');
     inquirer.prompt(prompts.createMoreCardsPrompt)
         .then(function (answers) {
-
             if (answers.createMoreCards) {
-                makeFlashCards();
+                makeFlashcards();
             } else if (!answers.createMoreCards) {
-                //print flash cards
-                console.log(flashCardArray);
+                printCards();
             }
-
         });
 }
 
 // Function to print flash cards
 const printCards = function () {
-    flashCardArray.forEach(function(element){
-        console.log('Front: ' + '\nBack: ');
+    let count = 0;
+    basicFlashcardArray.forEach(function (element) {
+        count++;
+        console.log('------------------');
+        console.log('Flashcard #' + count + '\nFront: ' + element.front + '\nBack: ' + element.back);
     });
-}
-
-// Function to make flash cards
-const makeFlashCards = function () {
-    console.log('------------------');
-    inquirer.prompt(prompts.flashCardTypePrompt)
-        .then(function (answers) {
-
-            if (answers.flashCardType === "Basic card") {
-                createNewBasicCard();
-            } else if (answers.flashCardType === "Cloze card") {
-                createNewClozeCard();
-            }
-        });
+    clozeFlashcardArray.forEach(function (element) {
+        count++;
+        console.log('------------------');
+        console.log('Flashcard #' + count + '\nFront: ' + element.partial + '\nBack: ' + element.fullText);
+    });
 };
 
-makeFlashCards();
-
-// // // // // TESTING => // // // // // 
-
-// var firstPresident = new BasicCard(
-//     "Who was the first president of the United States?", "George Washington");
-
-// // "Who was the first president of the United States?"
-// console.log(firstPresident.front);
-
-// // "George Washington"
-// console.log(firstPresident.back);
-
-// var firstPresidentCloze = new ClozeCard(
-//     "George Washington was the first president of the United States.", "George Washington");
-
-// // "George Washington"
-// console.log(firstPresidentCloze.cloze);
-
-// // " ... was the first president of the United States.
-// console.log(firstPresidentCloze.partial);
-
-// // "George Washington was the first president of the United States.
-// console.log(firstPresidentCloze.fullText);
+runProgram();
